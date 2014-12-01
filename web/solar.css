@@ -16,10 +16,16 @@ p {
 }
 
 #container {
-  width: 100%;
+  left: 0;
+  right: 0;
   height: 400px;
   border: 1px solid #ccc;
   background-color: #fff;
+}
+
+#area {
+  left: 0;
+  right: 0;
 }
 
 #summary {
