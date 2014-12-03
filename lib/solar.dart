@@ -5,26 +5,19 @@
 /**
  * A solar system visualization.
  */
-
 library solar;
 
-import 'dart:async';
 import 'dart:html';
 import 'dart:math';
 
-void main() {
-  CanvasElement canvas = querySelector("#area");
-  scheduleMicrotask(new SolarSystem(canvas).start);
-}
-
-Element notes = querySelector("#fps");
-num fpsAverage;
+Element _notes = querySelector("#fps");
+num _fpsAverage;
 
 /// Display the animation's FPS in a div.
 void showFps(num fps) {
-  if (fpsAverage == null) fpsAverage = fps;
-  fpsAverage = fps * 0.05 + fpsAverage * 0.95;
-  notes.text = "${fpsAverage.round()} fps";
+  if (_fpsAverage == null) _fpsAverage = fps;
+  _fpsAverage = fps * 0.05 + _fpsAverage * 0.95;
+  _notes.text = "${_fpsAverage.round()} fps";
 }
 
 /**
@@ -56,20 +49,20 @@ class SolarSystem {
 
     // Create sun.
     final mercury = new PlanetaryBody(this, "orange", 0.382, 0.387, 0.241);
-    final venus   = new PlanetaryBody(this, "green", 0.949, 0.723, 0.615);
+    final venus = new PlanetaryBody(this, "green", 0.949, 0.723, 0.615);
     final earth = new PlanetaryBody(this, "#33f", 1.0, 1.0, 1.0);
-    final moon  = new PlanetaryBody(this, "gray", 0.2, 0.14, 0.075);
+    final moon = new PlanetaryBody(this, "gray", 0.2, 0.14, 0.075);
     earth.addPlanet(moon);
 
-    final mars  = new PlanetaryBody(this, "red", 0.532, 1.524, 1.88);
+    final mars = new PlanetaryBody(this, "red", 0.532, 1.524, 1.88);
 
     final f = 0.1;
     final h = 1 / 1500.0;
     final g = 1 / 72.0;
 
-    final jupiter  = new PlanetaryBody(this, "gray", 4.0, 5.203, 11.86);
-    final io       = new PlanetaryBody(this, "gray", 3.6*f, 421*h, 1.769*g);
-    final europa   = new PlanetaryBody(this, "gray", 3.1*f, 671*h, 3.551*g);
+    final jupiter = new PlanetaryBody(this, "gray", 4.0, 5.203, 11.86);
+    final io = new PlanetaryBody(this, "gray", 3.6*f, 421*h, 1.769*g);
+    final europa = new PlanetaryBody(this, "gray", 3.1*f, 671*h, 3.551*g);
     final ganymede = new PlanetaryBody(this, "gray", 5.3*f, 1070*h, 7.154*g);
     final callisto = new PlanetaryBody(this, "gray", 4.8*f, 1882*h, 16.689*g);
     jupiter..addPlanet(io)
@@ -85,10 +78,10 @@ class SolarSystem {
 
     addAsteroidBelt(sun, 150);
 
-   requestRedraw();
+    requestRedraw();
   }
 
-  void draw(num _) {
+  void draw([_]) {
     num time = new DateTime.now().millisecondsSinceEpoch;
     if (renderTime != null) showFps(1000 / (time - renderTime));
     renderTime = time;
@@ -130,6 +123,7 @@ class SolarSystem {
 
 /**
  * A representation of a plantetary body.
+ *
  * This class can calculate its position for a given time index,
  * and draw itself and any child planets.
  */
@@ -195,16 +189,18 @@ class PlanetaryBody {
   }
 
   void drawChildren(CanvasRenderingContext2D context, Point p) {
-    for (var planet in planets) planet.draw(context, p);
+    for (var planet in planets) {
+      planet.draw(context, p);
+    }
   }
 
   num calculateSpeed(num period) =>
-    period == 0.0 ? 0.0 : 1 / (60.0 * 24.0 * 2 * period);
+      period == 0.0 ? 0.0 : 1 / (60.0 * 24.0 * 2 * period);
 
   Point calculatePos(Point p) {
     if (orbitSpeed == 0.0) return p;
     num angle = solarSystem.renderTime * orbitSpeed;
-    return new Point(orbitRadius * cos(angle) + p.x,
-                     orbitRadius * sin(angle) + p.y);
+    return new Point(
+        orbitRadius * cos(angle) + p.x, orbitRadius * sin(angle) + p.y);
   }
 }
